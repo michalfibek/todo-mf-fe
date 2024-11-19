@@ -1,3 +1,11 @@
 .todos {
   /* @apply flex flex-; */
 }
+
+.filterOption {
+  @apply py-1 px-2 border rounded-lg;
+}
+
+.selectedFilter {
+  @apply bg-lime-50 border-lime-400 hover:bg-lime-200;
+}
