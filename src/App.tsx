@@ -1,12 +1,18 @@
 import "./App.css"
-import { Counter } from "./features/counter/Counter"
-import { Quotes } from "./features/quotes/Quotes"
-import logo from "./logo.svg"
+// import { Counter } from "./features/counter/Counter"
+// import { Quotes } from "./features/quotes/Quotes"
+import { Todos } from "./features/todos/Todos"
 
 const App = () => {
   return (
     <div className="App">
-      <header className="App-header">
+      <main className="relative min-h-screen bg-white flex flex-col items-center justify-center">
+        <header>
+          <h1 className="text-4xl font-bold mb-6 text-lime-600">Taskey</h1>
+        </header>
+        <Todos />
+      </main>
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <Counter />
         <p>
@@ -60,7 +66,7 @@ const App = () => {
             Reselect
           </a>
         </span>
-      </header>
+      </header> */}
     </div>
   )
 }
