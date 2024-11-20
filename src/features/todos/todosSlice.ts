@@ -27,12 +27,8 @@ export const todoSlice = createApi({
         method: "POST",
         body: { text: taskText },
       }),
-      // TODO fixme
-      // onQueryStarted: ({ patch }, { dispatch, queryFulfilled }) =>
-      //   addTaskToCache({ patch }, { dispatch, queryFulfilled }),
-
-      // onQueryStarted: ({ id, ...patch }, { dispatch, queryFulfilled }) =>
-      //   updateTaskInCache({ id, ...patch }, { dispatch, queryFulfilled }),
+      onQueryStarted: (taskText, { dispatch, queryFulfilled }) =>
+        addTaskToCache(taskText, { dispatch, queryFulfilled }),
     }),
     markComplete: builder.mutation<
       Task,
@@ -70,8 +66,8 @@ export const todoSlice = createApi({
         url: `tasks/${taskId}`,
         method: "DELETE",
       }),
-      onQueryStarted: ({ id, ...patch }, { dispatch, queryFulfilled }) =>
-        removeTaskFromCache({ id, ...patch }, { dispatch, queryFulfilled }),
+      onQueryStarted: (taskId, { dispatch, queryFulfilled }) =>
+        removeTaskFromCache({ taskId }, { dispatch, queryFulfilled }),
     }),
   }),
 })
@@ -85,45 +81,60 @@ async function updateTaskInCache(
     dispatch: AppDispatch
     queryFulfilled: QueryFulfilled<Task, TaskId>
   },
-): Promise<void> {
-  const { data: updatedTask } = await queryFulfilled
-  await dispatch(
-    todoSlice.util.updateQueryData("getTasks", undefined, draft => {
-      const taskIndex = draft.findIndex(task => task.id === updatedTask.id)
-      if (taskIndex !== -1) {
-        draft[taskIndex] = updatedTask
-      }
-    }),
-  )
+) {
+  try {
+    const { data: updatedTask } = await queryFulfilled
+    await dispatch(
+      todoSlice.util.updateQueryData("getTasks", undefined, draft => {
+        const taskIndex = draft.findIndex(task => task.id === updatedTask.id)
+        if (taskIndex !== -1) {
+          draft[taskIndex] = updatedTask
+        }
+      }),
+    )
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 async function removeTaskFromCache(
-  { id, ...patch }: TaskId,
-  { dispatch, queryFulfilled }: QueryLifecycleApi,
+  { taskId }: { taskId: TaskId },
+  {
+    dispatch,
+    queryFulfilled,
+  }: {
+    dispatch: AppDispatch
+    queryFulfilled: QueryFulfilled<Task, TaskId>
+  },
 ) {
   try {
     const patchResult = dispatch(
       todoSlice.util.updateQueryData("getTasks", undefined, draft => {
-        const taskIndex = draft.findIndex(task => task.id === id)
+        const taskIndex = draft.findIndex(task => task.id === taskId)
         if (taskIndex !== -1) {
           draft.splice(taskIndex, 1)
         }
       }),
     )
-  } catch {}
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 async function addTaskToCache(
-  { patch }: Task,
+  taskText: TaskText,
   { dispatch, queryFulfilled }: QueryLifecycleApi,
 ) {
   try {
     const { data: newTaskData } = await queryFulfilled
-    console.log(newTaskData)
-    todoSlice.util.updateQueryData("getTasks", undefined, draft => {
-      draft.push(newTaskData)
-    })
-  } catch {}
+    await dispatch(
+      todoSlice.util.updateQueryData("getTasks", undefined, draft => {
+        draft.unshift(newTaskData)
+      }),
+    )
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 // Export the auto-generated hook for the `getPosts` query endpoint
