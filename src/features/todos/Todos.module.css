@@ -7,5 +7,5 @@
 }
 
 .selectedFilter {
-  @apply bg-lime-50 border-lime-400 hover:bg-lime-200;
+  @apply bg-purple-50 border-purple-400 hover:bg-purple-200;
 }

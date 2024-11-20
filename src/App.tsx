@@ -8,7 +8,7 @@ const App = () => {
     <div className="App">
       <main className="relative min-h-screen bg-white flex flex-col items-center mt-8">
         <header>
-          <h1 className="text-4xl font-bold mb-6 text-lime-600">Taskey</h1>
+          <h1 className="text-4xl font-bold mb-6 text-purple-600">Taskey</h1>
         </header>
         <Todos />
       </main>
