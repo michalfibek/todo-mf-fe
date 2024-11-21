@@ -55,10 +55,6 @@ export const TaskComponent = ({
     }
   }
 
-  // const handleCloseEdit = () => {
-  //   handleSetEditing(false)
-  // }
-
   const handleSaveEdit = async (taskText: TaskText) => {
     await editTask({ id: task.id, taskText: taskText })
     handleSetEditing(false)

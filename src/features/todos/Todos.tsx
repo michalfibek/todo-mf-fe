@@ -10,10 +10,8 @@ import {
   useDeleteTaskMutation,
   useGetTasksQuery,
   useMarkCompleteMutation,
-  useMarkIncompleteMutation,
 } from "./todosSlice"
 import Loader from "../../components/loader"
-import { useAppDispatch } from "../../app/hooks"
 import { NewTaskComponent } from "./components/NewTaskComponent"
 import { TaskComponent } from "./components/TaskComponent"
 
@@ -30,7 +28,6 @@ const filterOptions = [
 ] as filterOptionType[]
 
 export const Todos = () => {
-  const dispatch = useAppDispatch()
   const [taskFilter, setTaskFilter] = useState<filterType>("ALL")
   const [editingField, setEditingField] = useState<TaskId | null>(null)
   const { data: tasks, isError, isLoading, isSuccess } = useGetTasksQuery()
