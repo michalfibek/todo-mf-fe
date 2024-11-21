@@ -13,6 +13,8 @@ import {
   PencilSquareIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid"
+import { useAppDispatch } from "../../../app/hooks"
+import { showPopup } from "../../popup/popupSlice"
 
 type TaskComponentProps = {
   task: Task
@@ -25,19 +27,36 @@ export const TaskComponent = ({
   isEditing,
   handleSetEditing,
 }: TaskComponentProps): JSX.Element => {
+  const dispatch = useAppDispatch()
   const inputField = useRef<HTMLInputElement>(null)
   const [taskText, setTaskText] = useState(task.text)
 
-  const [markComplete, { isLoading: isMarkCompleteLoading }] =
+  const [markComplete, { isError: isMarkCompleteError }] =
     useMarkCompleteMutation()
 
-  const [markIncomplete, { isLoading: isMarkIncompleteLoading }] =
+  const [markIncomplete, { isError: isMarkIncompleteError }] =
     useMarkIncompleteMutation()
 
-  const [deleteTask, { isLoading: isDeleteTaskLoading }] =
-    useDeleteTaskMutation()
+  const [deleteTask, { isError: isDeleteTaskError }] = useDeleteTaskMutation()
 
-  const [editTask, { isLoading: isEditTaskLoading }] = useEditTaskMutation()
+  const [editTask, { isError: isEditTaskError }] = useEditTaskMutation()
+
+  const hasError =
+    isMarkCompleteError ||
+    isMarkIncompleteError ||
+    isDeleteTaskError ||
+    isEditTaskError
+
+  useEffect(() => {
+    if (hasError) {
+      dispatch(
+        showPopup({
+          message: "Server Error: Cannot update the task",
+          type: "error",
+        }),
+      )
+    }
+  }, [hasError, dispatch])
 
   const handleDeleteTask = async (id: TaskId) => {
     await deleteTask(id)

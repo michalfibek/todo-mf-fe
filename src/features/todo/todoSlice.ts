@@ -73,7 +73,6 @@ export const todoSlice = createApi({
       }),
       onQueryStarted: ({ id, taskText }, { dispatch, queryFulfilled }) =>
         updateTaskInCache({ dispatch, queryFulfilled }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Task", id }],
     }),
     deleteTask: builder.mutation<Task, TaskId>({
       query: id => ({
@@ -107,6 +106,7 @@ async function removeTaskFromCache(
   { dispatch, queryFulfilled }: QueryTypes,
 ) {
   try {
+    await queryFulfilled
     dispatch(
       todoSlice.util.updateQueryData("getTasks", undefined, draft => {
         const taskIndex = draft.findIndex(task => task.id === id)

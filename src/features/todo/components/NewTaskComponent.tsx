@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import { useAddTaskMutation } from "../todoSlice"
+import { useAppDispatch } from "../../../app/hooks"
+import { showPopup } from "../../popup/popupSlice"
 
 export const NewTaskComponent = (): JSX.Element => {
+  const dispatch = useAppDispatch()
   const inputRef = useRef<HTMLInputElement>(null)
   const [taskText, setTaskText] = useState("")
-  const [addTask, { isLoading: isAddTaskLoading }] = useAddTaskMutation()
+  const [addTask, { isLoading: isAddTaskLoading, error, isSuccess }] =
+    useAddTaskMutation()
 
   const disabled = isAddTaskLoading
 
@@ -12,14 +16,24 @@ export const NewTaskComponent = (): JSX.Element => {
     const taskTrimmed = taskText.trim()
     if (taskTrimmed) {
       const response = await addTask(taskTrimmed)
-      setTaskText("")
+      if (response.error === undefined) setTaskText("")
     }
   }
 
-  // re-focus
+  useEffect(() => {
+    error &&
+      dispatch(
+        showPopup({
+          message: "Server Error: Cannot add new task",
+          type: "error",
+        }),
+      )
+  }, [error, dispatch])
+
+  // re-focus after adding new task
   useEffect(() => {
     inputRef.current?.focus()
-  }, [isAddTaskLoading])
+  }, [isSuccess])
 
   return (
     <form

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   CheckIcon,
   ExclamationCircleIcon,
@@ -13,6 +13,8 @@ import {
 import Loader from "../../components/loader"
 import { NewTaskComponent } from "./components/NewTaskComponent"
 import { TaskComponent } from "./components/TaskComponent"
+import { useAppDispatch } from "../../app/hooks"
+import { showPopup } from "../popup/popupSlice"
 
 type filterType = "ALL" | "ACTIVE" | "COMPLETED"
 type filterOptionType = {
@@ -34,15 +36,33 @@ const filterOptions = [
 ] as filterOptionType[]
 
 export const Todo = () => {
+  const dispatch = useAppDispatch()
   const [taskFilter, setTaskFilter] = useState<filterType>("ALL")
   const [editingField, setEditingField] = useState<TaskId | null>(null)
   const { data: tasks, isError, isLoading } = useGetTasksQuery()
 
-  const [markComplete, { isLoading: isMarkCompleteLoading }] =
+  const [markComplete, { error: isMarkCompleteError }] =
     useMarkCompleteMutation()
 
-  const [deleteTask, { isLoading: isDeleteTaskLoading }] =
-    useDeleteTaskMutation()
+  const [deleteTask, { error: isDeleteTaskError }] = useDeleteTaskMutation()
+
+  useEffect(() => {
+    isMarkCompleteError &&
+      dispatch(
+        showPopup({
+          message: "Server Error: Cannot mark all tasks as complete",
+          type: "error",
+        }),
+      )
+
+    isDeleteTaskError &&
+      dispatch(
+        showPopup({
+          message: "Server Error: Cannot delete all complete tasks",
+          type: "error",
+        }),
+      )
+  }, [isMarkCompleteError, isDeleteTaskError, dispatch])
 
   const deleteAllCompleted = async () => {
     try {
