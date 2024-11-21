@@ -2,7 +2,7 @@ import type { ThunkDispatch, UnknownAction } from "@reduxjs/toolkit"
 
 import {
   createApi,
-  type fetchBaseQuery,
+  fetchBaseQuery,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react"
 
