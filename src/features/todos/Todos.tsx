@@ -7,7 +7,6 @@ import {
 } from "@heroicons/react/20/solid"
 import type { TaskId } from "./todosSlice"
 import {
-  useAddTaskMutation,
   useDeleteTaskMutation,
   useGetTasksQuery,
   useMarkCompleteMutation,
@@ -34,41 +33,27 @@ export const Todos = () => {
   const dispatch = useAppDispatch()
   const [taskFilter, setTaskFilter] = useState<filterType>("ALL")
   const [editingField, setEditingField] = useState<TaskId | null>(null)
-  const { data, isError, isLoading, isSuccess } = useGetTasksQuery()
-  const [addTask, { isLoading: isAddTaskLoading }] = useAddTaskMutation()
+  const { data: tasks, isError, isLoading, isSuccess } = useGetTasksQuery()
 
   const [markComplete, { isLoading: isMarkCompleteLoading }] =
     useMarkCompleteMutation()
 
-  const [markIncomplete, { isLoading: isMarkIncompleteLoading }] =
-    useMarkIncompleteMutation()
-
   const [deleteTask, { isLoading: isDeleteTaskLoading }] =
     useDeleteTaskMutation()
 
-  const [newTaskText, setNewTaskText] = useState("")
-
-  const handleAddTask = async () => {
-    if (newTaskText.trim()) {
-      const response = await addTask(newTaskText)
-      setNewTaskText("")
-      console.log(response)
+  const deleteAllCompleted = async () => {
+    try {
+      tasks?.filter(task => task.completed).map(task => deleteTask(task.id))
+    } catch (error) {
+      console.log(error)
     }
   }
 
-  const handleDeleteTask = async (taskId: TaskId) => {
-    deleteTask(taskId)
-  }
-
-  const handleTaskToggle = async (id: TaskId, completed: boolean) => {
+  const markAllCompleted = async () => {
     try {
-      if (completed) {
-        const response = await markIncomplete(id)
-        // console.log(response)
-      } else {
-        const response = await markComplete(id)
-        // console.log(response)
-      }
+      tasks
+        ?.filter(task => task.completed === false)
+        .map(task => markComplete(task.id))
     } catch (error) {
       console.log(error)
     }
@@ -76,13 +61,7 @@ export const Todos = () => {
 
   return (
     <section className="flex flex-col border border-gray-300 p-4 rounded-lg text-lg max-w-xl bg-white min-w-96">
-      <NewTaskComponent
-        taskText={newTaskText}
-        handleChangeTaskText={setNewTaskText}
-        handleAddTask={handleAddTask}
-        isDisabled={isAddTaskLoading}
-      />
-
+      <NewTaskComponent />
       <div className="task-filter mt-6 flex flex-row space-x-2 text-sm">
         {filterOptions.map(option => (
           <button
@@ -106,9 +85,13 @@ export const Todos = () => {
             <Loader>Loading tasks...</Loader>
           </div>
         )}
-        {data &&
-          isSuccess &&
-          data
+        {tasks?.length === 0 && (
+          <div className="flex items-center my-6 text-center self-center">
+            <span>Everyhing done for now. Good job!</span>
+          </div>
+        )}
+        {tasks &&
+          tasks
             .filter(
               task =>
                 taskFilter === "ALL" ||
@@ -127,20 +110,27 @@ export const Todos = () => {
             ))}
       </div>
       <footer className="flex flex-col mt-8 text-sm text-left text-gray-400">
-        {data && isSuccess && (
+        {tasks && isSuccess && (
           <div className="">
-            {data.filter(task => task.completed).length}/{data.length} completed
+            {tasks.filter(task => task.completed).length}/{tasks.length}{" "}
+            completed
           </div>
         )}
         <div className="flex flex-row pt-6">
           <div className="flex-none text-left">
-            <button className="group flex flex-row items-center hover:text-purple-800">
+            <button
+              onClick={markAllCompleted}
+              className="group flex flex-row items-center hover:text-purple-800"
+            >
               <CheckIcon className="w-4 h-4 mr-2 text-purple-600 group-hover:text-purple-800" />
               Mark all as completed
             </button>
           </div>
           <div className="flex-1 text-right">
-            <button className="group flex flex-row place-self-end items-center hover:text-purple-800">
+            <button
+              onClick={deleteAllCompleted}
+              className="group flex flex-row place-self-end items-center hover:text-purple-800"
+            >
               <TrashIcon className="w-4 h-4 mr-2 text-purple-600 group-hover:text-purple-800" />
               Clear completed
             </button>

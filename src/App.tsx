@@ -6,9 +6,9 @@ import { Todos } from "./features/todos/Todos"
 const App = () => {
   return (
     <div className="App">
-      <main className="relative min-h-screen bg-white flex flex-col items-center mt-8">
+      <main className="relative  flex flex-col items-center mt-8">
         <header>
-          <h1 className="text-4xl font-bold mb-6 text-purple-600">Taskey</h1>
+          <h1 className="text-4xl font-bold mb-6 text-purple-600">Tasky</h1>
         </header>
         <Todos />
       </main>

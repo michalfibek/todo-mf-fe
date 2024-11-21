@@ -39,8 +39,8 @@ export const TaskComponent = ({
 
   const [editTask, { isLoading: isEditTaskLoading }] = useEditTaskMutation()
 
-  const handleDeleteTask = async (taskId: TaskId) => {
-    deleteTask(taskId)
+  const handleDeleteTask = async (id: TaskId) => {
+    await deleteTask(id)
   }
 
   const handleTaskToggle = async (id: TaskId, completed: boolean) => {
@@ -59,19 +59,20 @@ export const TaskComponent = ({
   //   handleSetEditing(false)
   // }
 
-  const handleSaveEdit = (taskText: TaskText) => {
-    editTask({ taskId: task.id, taskText: taskText })
+  const handleSaveEdit = async (taskText: TaskText) => {
+    await editTask({ id: task.id, taskText: taskText })
     handleSetEditing(false)
   }
 
   useEffect(() => {
     function callback(e: KeyboardEvent) {
       if (e.code.toLowerCase() === "escape") {
+        setTaskText(task.text)
         handleSetEditing(false)
       }
     }
     return document.addEventListener("keydown", callback)
-  }, [isEditing, handleSetEditing])
+  }, [isEditing, handleSetEditing, task])
 
   useEffect(() => {
     if (isEditing) {
@@ -106,14 +107,14 @@ export const TaskComponent = ({
               e.preventDefault()
               handleSaveEdit(taskText)
             }}
+            className="full-width"
           >
             <input
               type="text"
-              className="px-2"
+              className="block full-width px-2"
               ref={inputField}
               value={taskText}
               onChange={e => setTaskText(e.target.value)}
-              // onBlur={() => handleSetEditing(false)}
             />
           </form>
         )}

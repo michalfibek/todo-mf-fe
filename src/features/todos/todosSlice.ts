@@ -14,12 +14,17 @@ export type Task = {
 export const todoSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080" }),
-  tagTypes: ["Tasks"],
+  tagTypes: ["Task"],
   endpoints: builder => ({
-    getTasks: builder.query<Task[], undefined>({
+    getTasks: builder.query<Task[], void>({
       query: () => "/tasks",
-      providesTags: result =>
-        result ? result.map(({ id }) => ({ type: "Tasks", id })) : [],
+      providesTags: (result, error, arg) =>
+        result
+          ? [...result.map(({ id }) => ({ type: "Task" as const, id })), "Task"]
+          : ["Task"],
+    }),
+    getCompletedTasks: builder.query<Task[], void>({
+      query: () => "/tasks/completed",
     }),
     addTask: builder.mutation<Task, TaskText>({
       query: taskText => ({
@@ -30,58 +35,44 @@ export const todoSlice = createApi({
       onQueryStarted: (taskText, { dispatch, queryFulfilled }) =>
         addTaskToCache(taskText, { dispatch, queryFulfilled }),
     }),
-    markComplete: builder.mutation<
-      Task,
-      { taskId: TaskId; taskText: TaskText }
-    >({
-      query: taskId => ({
-        url: `tasks/${taskId}/complete`,
+    markComplete: builder.mutation<Task, TaskId>({
+      query: id => ({
+        url: `tasks/${id}/complete`,
         method: "POST",
       }),
-      onQueryStarted: ({ taskId, taskText }, { dispatch, queryFulfilled }) =>
-        updateTaskInCache({ taskId, taskText }, { dispatch, queryFulfilled }),
+      onQueryStarted: (id, { dispatch, queryFulfilled }) =>
+        updateTaskInCache({ dispatch, queryFulfilled }),
     }),
-    markIncomplete: builder.mutation<
-      Task,
-      { taskId: TaskId; taskText: TaskText }
-    >({
-      query: taskId => ({
-        url: `tasks/${taskId}/incomplete`,
+    markIncomplete: builder.mutation<Task, TaskId>({
+      query: id => ({
+        url: `tasks/${id}/incomplete`,
         method: "POST",
       }),
-      onQueryStarted: ({ taskId, taskText }, { dispatch, queryFulfilled }) =>
-        updateTaskInCache({ taskId, taskText }, { dispatch, queryFulfilled }),
+      onQueryStarted: (id, { dispatch, queryFulfilled }) =>
+        updateTaskInCache({ dispatch, queryFulfilled }),
     }),
-    editTask: builder.mutation<Task, { taskId: TaskId; taskText: TaskText }>({
-      query: ({ taskId, taskText }) => ({
-        url: `tasks/${taskId}`,
+    editTask: builder.mutation<Task, { id: TaskId; taskText: TaskText }>({
+      query: ({ id, taskText }) => ({
+        url: `tasks/${id}`,
         method: "POST",
         body: { text: taskText },
       }),
-      onQueryStarted: ({ taskId, taskText }, { dispatch, queryFulfilled }) =>
-        updateTaskInCache({ taskId, taskText }, { dispatch, queryFulfilled }),
+      onQueryStarted: ({ id, taskText }, { dispatch, queryFulfilled }) =>
+        updateTaskInCache({ dispatch, queryFulfilled }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Task", id }],
     }),
     deleteTask: builder.mutation<Task, TaskId>({
-      query: taskId => ({
-        url: `tasks/${taskId}`,
+      query: id => ({
+        url: `tasks/${id}`,
         method: "DELETE",
       }),
-      onQueryStarted: (taskId, { dispatch, queryFulfilled }) =>
-        removeTaskFromCache({ taskId }, { dispatch, queryFulfilled }),
+      onQueryStarted: (id, { dispatch, queryFulfilled }) =>
+        removeTaskFromCache(id, { dispatch, queryFulfilled }),
     }),
   }),
 })
 
-async function updateTaskInCache(
-  { taskId, taskText }: { taskId: TaskId; taskText: TaskText },
-  {
-    dispatch,
-    queryFulfilled,
-  }: {
-    dispatch: AppDispatch
-    queryFulfilled: QueryFulfilled<Task, TaskId>
-  },
-) {
+async function updateTaskInCache({ dispatch, queryFulfilled }) {
   try {
     const { data: updatedTask } = await queryFulfilled
     await dispatch(
@@ -97,20 +88,11 @@ async function updateTaskInCache(
   }
 }
 
-async function removeTaskFromCache(
-  { taskId }: { taskId: TaskId },
-  {
-    dispatch,
-    queryFulfilled,
-  }: {
-    dispatch: AppDispatch
-    queryFulfilled: QueryFulfilled<Task, TaskId>
-  },
-) {
+async function removeTaskFromCache(id: TaskId, { dispatch, queryFulfilled }) {
   try {
     const patchResult = dispatch(
       todoSlice.util.updateQueryData("getTasks", undefined, draft => {
-        const taskIndex = draft.findIndex(task => task.id === taskId)
+        const taskIndex = draft.findIndex(task => task.id === id)
         if (taskIndex !== -1) {
           draft.splice(taskIndex, 1)
         }
@@ -123,23 +105,23 @@ async function removeTaskFromCache(
 
 async function addTaskToCache(
   taskText: TaskText,
-  { dispatch, queryFulfilled }: QueryLifecycleApi,
+  { dispatch, queryFulfilled },
 ) {
   try {
-    const { data: newTaskData } = await queryFulfilled
+    const { data: newTask } = await queryFulfilled
     await dispatch(
       todoSlice.util.updateQueryData("getTasks", undefined, draft => {
-        draft.unshift(newTaskData)
+        draft.unshift(newTask)
       }),
     )
-  } catch (error) {
-    console.log(error)
+  } catch (err) {
+    console.error(err)
   }
 }
 
-// Export the auto-generated hook for the `getPosts` query endpoint
 export const {
   useGetTasksQuery,
+  useGetCompletedTasksQuery,
   useAddTaskMutation,
   useMarkCompleteMutation,
   useMarkIncompleteMutation,
