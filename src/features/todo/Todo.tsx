@@ -4,12 +4,12 @@ import {
   ExclamationCircleIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid"
-import type { TaskId } from "./todosSlice"
+import type { TaskId } from "./todoSlice"
 import {
   useDeleteTaskMutation,
   useGetTasksQuery,
   useMarkCompleteMutation,
-} from "./todosSlice"
+} from "./todoSlice"
 import Loader from "../../components/loader"
 import { NewTaskComponent } from "./components/NewTaskComponent"
 import { TaskComponent } from "./components/TaskComponent"
@@ -33,7 +33,7 @@ const filterOptions = [
   { filterKey: "COMPLETED", description: "Completed" },
 ] as filterOptionType[]
 
-export const Todos = () => {
+export const Todo = () => {
   const [taskFilter, setTaskFilter] = useState<filterType>("ALL")
   const [editingField, setEditingField] = useState<TaskId | null>(null)
   const { data: tasks, isError, isLoading } = useGetTasksQuery()

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { useAddTaskMutation } from "../todosSlice"
+import { useAddTaskMutation } from "../todoSlice"
 
 export const NewTaskComponent = (): JSX.Element => {
   const inputRef = useRef<HTMLInputElement>(null)

@@ -6,7 +6,7 @@ import {
   type Task,
   type TaskId,
   type TaskText,
-} from "../todosSlice"
+} from "../todoSlice"
 import { useEffect, useRef, useState } from "react"
 import {
   CheckCircleIcon,

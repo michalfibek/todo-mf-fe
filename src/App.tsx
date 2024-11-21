@@ -1,7 +1,7 @@
 import "./App.css"
 // import { Counter } from "./features/counter/Counter"
 // import { Quotes } from "./features/quotes/Quotes"
-import { Todos } from "./features/todos/Todos"
+import { Todo } from "./features/todo/Todo"
 
 const App = () => {
   return (
@@ -10,7 +10,7 @@ const App = () => {
         <header>
           <h1 className="text-4xl font-bold mb-6 text-purple-600">Tasky</h1>
         </header>
-        <Todos />
+        <Todo />
       </main>
     </div>
   )
