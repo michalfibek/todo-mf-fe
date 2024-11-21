@@ -107,7 +107,7 @@ async function removeTaskFromCache(
   { dispatch, queryFulfilled }: QueryTypes,
 ) {
   try {
-    const patchResult = dispatch(
+    dispatch(
       todoSlice.util.updateQueryData("getTasks", undefined, draft => {
         const taskIndex = draft.findIndex(task => task.id === id)
         if (taskIndex !== -1) {

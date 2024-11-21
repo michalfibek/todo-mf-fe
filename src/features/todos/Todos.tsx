@@ -1,5 +1,4 @@
 import { useState } from "react"
-import styles from "./Todos.module.css"
 import {
   CheckIcon,
   ExclamationCircleIcon,
@@ -21,6 +20,13 @@ type filterOptionType = {
   description: string
 }
 
+const styles = {
+  smIcon: "w-4 h-4 mr-2 text-purple-600 group-hover:text-purple-800",
+  filterOption: "py-1 px-2 border rounded-lg",
+  selectedFilter: "bg-purple-50 border-purple-400 hover:bg-purple-200",
+  tasksFooter: "flex flex-col mt-8 text-sm text-left text-gray-400",
+}
+
 const filterOptions = [
   { filterKey: "ALL", description: "All tasks" },
   { filterKey: "ACTIVE", description: "Active" },
@@ -30,7 +36,7 @@ const filterOptions = [
 export const Todos = () => {
   const [taskFilter, setTaskFilter] = useState<filterType>("ALL")
   const [editingField, setEditingField] = useState<TaskId | null>(null)
-  const { data: tasks, isError, isLoading, isSuccess } = useGetTasksQuery()
+  const { data: tasks, isError, isLoading } = useGetTasksQuery()
 
   const [markComplete, { isLoading: isMarkCompleteLoading }] =
     useMarkCompleteMutation()
@@ -106,34 +112,34 @@ export const Todos = () => {
               />
             ))}
       </div>
-      <footer className="flex flex-col mt-8 text-sm text-left text-gray-400">
-        {tasks && isSuccess && (
-          <div className="">
+      {tasks && tasks.length > 0 && (
+        <footer className="flex flex-col mt-8 text-sm text-left text-gray-400">
+          <div>
             {tasks.filter(task => task.completed).length}/{tasks.length}{" "}
             completed
           </div>
-        )}
-        <div className="flex flex-row pt-6">
-          <div className="flex-none text-left">
-            <button
-              onClick={markAllCompleted}
-              className="group flex flex-row items-center hover:text-purple-800"
-            >
-              <CheckIcon className="w-4 h-4 mr-2 text-purple-600 group-hover:text-purple-800" />
-              Mark all as completed
-            </button>
+          <div className="flex flex-row pt-6">
+            <div className="flex-none text-left">
+              <button
+                onClick={markAllCompleted}
+                className="group flex flex-row items-center hover:text-purple-800"
+              >
+                <CheckIcon className={styles.smIcon} />
+                Mark all as completed
+              </button>
+            </div>
+            <div className="flex-1 text-right">
+              <button
+                onClick={deleteAllCompleted}
+                className="group flex flex-row place-self-end items-center hover:text-purple-800"
+              >
+                <TrashIcon className={styles.smIcon} />
+                Clear completed
+              </button>
+            </div>
           </div>
-          <div className="flex-1 text-right">
-            <button
-              onClick={deleteAllCompleted}
-              className="group flex flex-row place-self-end items-center hover:text-purple-800"
-            >
-              <TrashIcon className="w-4 h-4 mr-2 text-purple-600 group-hover:text-purple-800" />
-              Clear completed
-            </button>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </section>
   )
 }
