@@ -37,6 +37,10 @@ export const Todo = () => {
     setEditingField(editing ? taskId : null);
   }, []);
 
+  const handleChangeActiveFilter = useCallback((filterKey: TFilterKey) => {
+    setActiveFilter(filterKey);
+  }, []);
+
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];
 
@@ -52,9 +56,9 @@ export const Todo = () => {
       ));
   }, [tasks, filterTasks, editingField, handleSetEditing]);
 
-  const handleChangeActiveFilter = (filterKey: TFilterKey) => {
-    setActiveFilter(filterKey);
-  };
+  const toolbar = useMemo(() => {
+    return !tasksEmpty ? <ToolbarComponent /> : null;
+  }, [tasksEmpty]);
 
   return (
     <section className="flex flex-col border border-gray-300 p-4 rounded-lg text-lg max-w-xl bg-white min-w-96">
@@ -72,14 +76,24 @@ export const Todo = () => {
             <Loader>Loading tasks...</Loader>
           </div>
         )}
-        {tasksEmpty && (
+        {!isLoading && tasksEmpty && (
           <div className="flex items-center my-6 text-center self-center">
             <span>Everyhing done for now. Good job!</span>
           </div>
         )}
         {filteredTasks}
       </div>
-      <ToolbarComponent />
+
+      <footer className="flex flex-col mt-8 text-sm text-left text-gray-400">
+        <div>
+          {!tasksEmpty && (
+            <>
+              {tasks.filter(task => task.completed).length}/{tasks.length} completed
+            </>
+          )}
+        </div>
+        {toolbar}
+      </footer>
     </section>
   );
 };
