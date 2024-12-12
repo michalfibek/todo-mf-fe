@@ -6,5 +6,5 @@ export type TFilterKey = string;
 export type TFilter = {
   key: TFilterKey;
   description: string;
-  filterFunc: TFilterFunction;
+  filterCallback: TFilterFunction;
 };

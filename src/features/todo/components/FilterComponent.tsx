@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
-import type { TFilter, TFilterFunction, TFilterKey } from "../types/TFilter";
+import type { TFilterKey } from "../types/TFilter";
+
+import { memo } from "react";
 import { filterOptionsStore } from "../store/filters";
 
 type FilterComponentProps = {
   activeFilter: TFilterKey;
   handleChangeActiveFilter: (filterKey: TFilterKey) => void;
 };
-export function FilterComponent({
+
+export const FilterComponent = memo(function ({
   activeFilter,
   handleChangeActiveFilter,
 }: FilterComponentProps) {
@@ -23,4 +25,4 @@ export function FilterComponent({
       ))}
     </div>
   );
-}
+});

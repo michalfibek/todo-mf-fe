@@ -4,21 +4,21 @@ export const filterOptionsStore = [
   {
     key: "ALL",
     description: "All tasks",
-    filterFunc(task) {
+    filterCallback() {
       return true;
     },
   },
   {
     key: "ACTIVE",
     description: "Active",
-    filterFunc(task) {
+    filterCallback(task) {
       return !task.completed;
     },
   },
   {
     key: "COMPLETED",
     description: "Completed",
-    filterFunc(task) {
+    filterCallback(task) {
       return task.completed;
     },
   },

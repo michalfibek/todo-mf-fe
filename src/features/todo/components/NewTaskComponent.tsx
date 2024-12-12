@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { useAddTaskMutation } from "../store/todoSlice";
+
 import { useAppDispatch } from "../../../app/hooks";
+
+import { useAddTaskMutation } from "../store/todoSlice";
 import { showPopup } from "../../popup/popupSlice";
 
 export const NewTaskComponent = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
   const [taskText, setTaskText] = useState("");
-  const [addTask, { isLoading: isAddTaskLoading, error, isSuccess }] =
-    useAddTaskMutation();
+  const [addTask, { isLoading: isAddTaskLoading, error, isSuccess }] = useAddTaskMutation();
 
   const disabled = isAddTaskLoading;
 

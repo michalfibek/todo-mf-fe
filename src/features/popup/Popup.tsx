@@ -4,9 +4,7 @@ import type { RootState } from "../../app/store";
 import { useEffect } from "react";
 
 export const Popup = ({ popupTimeout = 5000 }) => {
-  const { message, type, visible } = useAppSelector(
-    (state: RootState) => state.popup,
-  );
+  const { message, type, visible } = useAppSelector((state: RootState) => state.popup);
 
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -26,11 +24,7 @@ export const Popup = ({ popupTimeout = 5000 }) => {
   };
 
   const popupTypeClass =
-    type === "error"
-      ? "bg-red-500"
-      : type === "success"
-        ? "bg-green-500"
-        : "bg-blue-500";
+    type === "error" ? "bg-red-500" : type === "success" ? "bg-green-500" : "bg-blue-500";
 
   return (
     <div

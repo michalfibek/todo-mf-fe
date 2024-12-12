@@ -1,51 +1,41 @@
+import type { TTask, TTaskId, TTaskText } from "../types/TTask";
+
+import { memo, useEffect, useRef, useState } from "react";
+
 import {
   useDeleteTaskMutation,
   useEditTaskMutation,
   useMarkCompleteMutation,
   useMarkIncompleteMutation,
-  type Task,
-  type TaskId,
-  type TaskText,
 } from "../store/todoSlice";
-import { useEffect, useRef, useState } from "react";
-import {
-  CheckCircleIcon,
-  PencilSquareIcon,
-  XMarkIcon,
-} from "@heroicons/react/20/solid";
-import { useAppDispatch } from "../../../app/hooks";
 import { showPopup } from "../../popup/popupSlice";
 
+import { useAppDispatch } from "../../../app/hooks";
+
+import { CheckCircleIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/20/solid";
+
 type TaskComponentProps = {
-  task: Task;
+  task: TTask;
   isEditing: boolean;
-  handleSetEditing: (editing: boolean) => void;
+  onSetEditing: (taskId: TTaskId, editing: boolean) => void;
 };
 
-export const TaskComponent = ({
+export const TaskComponent = memo(function TaskComponent({
   task,
   isEditing,
-  handleSetEditing,
-}: TaskComponentProps): JSX.Element => {
+  onSetEditing,
+}: TaskComponentProps): JSX.Element {
   const dispatch = useAppDispatch();
   const inputField = useRef<HTMLInputElement>(null);
   const [taskText, setTaskText] = useState(task.text);
 
-  const [markComplete, { isError: isMarkCompleteError }] =
-    useMarkCompleteMutation();
-
-  const [markIncomplete, { isError: isMarkIncompleteError }] =
-    useMarkIncompleteMutation();
-
+  const [markComplete, { isError: isMarkCompleteError }] = useMarkCompleteMutation();
+  const [markIncomplete, { isError: isMarkIncompleteError }] = useMarkIncompleteMutation();
   const [deleteTask, { isError: isDeleteTaskError }] = useDeleteTaskMutation();
-
   const [editTask, { isError: isEditTaskError }] = useEditTaskMutation();
 
   const hasError =
-    isMarkCompleteError ||
-    isMarkIncompleteError ||
-    isDeleteTaskError ||
-    isEditTaskError;
+    isMarkCompleteError || isMarkIncompleteError || isDeleteTaskError || isEditTaskError;
 
   useEffect(() => {
     if (hasError) {
@@ -58,11 +48,11 @@ export const TaskComponent = ({
     }
   }, [hasError, dispatch]);
 
-  const handleDeleteTask = async (id: TaskId) => {
+  const handleDeleteTask = async (id: TTaskId) => {
     await deleteTask(id);
   };
 
-  const handleTaskToggle = async (id: TaskId, completed: boolean) => {
+  const handleTaskToggle = async (id: TTaskId, completed: boolean) => {
     try {
       if (completed) {
         await markIncomplete(id);
@@ -74,20 +64,20 @@ export const TaskComponent = ({
     }
   };
 
-  const handleSaveEdit = async (taskText: TaskText) => {
+  const handleSaveEdit = async (taskText: TTaskText) => {
     await editTask({ id: task.id, taskText: taskText });
-    handleSetEditing(false);
+    onSetEditing(task.id, false);
   };
 
   useEffect(() => {
     function callback(e: KeyboardEvent) {
       if (e.code.toLowerCase() === "escape") {
         setTaskText(task.text);
-        handleSetEditing(false);
+        onSetEditing(task.id, false);
       }
     }
     return document.addEventListener("keydown", callback);
-  }, [isEditing, handleSetEditing, task]);
+  }, [isEditing, onSetEditing, task]);
 
   useEffect(() => {
     if (isEditing) {
@@ -110,10 +100,7 @@ export const TaskComponent = ({
       </div>
       <div className="grow text-left">
         {!isEditing ? (
-          <span
-            onDoubleClick={() => handleSetEditing(true)}
-            className="block px-2 full-width"
-          >
+          <span onDoubleClick={() => onSetEditing(task.id, true)} className="block px-2 full-width">
             {taskText}
           </span>
         ) : (
@@ -140,7 +127,7 @@ export const TaskComponent = ({
             <CheckCircleIcon className="invisible group-hover:visible w-6 h-6 mr-2 text-green-600 hover:text-green-600" />
           </button>
         ) : (
-          <button onClick={() => handleSetEditing(true)} title="Edit task">
+          <button onClick={() => onSetEditing(task.id, true)} title="Edit task">
             <PencilSquareIcon className="invisible group-hover:visible w-6 h-6 mr-2 text-blue-400 hover:text-blue-600" />
           </button>
         )}
@@ -150,4 +137,4 @@ export const TaskComponent = ({
       </div>
     </div>
   );
-};
+});

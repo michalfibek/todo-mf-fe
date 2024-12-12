@@ -1,11 +1,7 @@
 import type { ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
 import type { TTask, TTaskId, TTaskText } from "../types/TTask";
 
-import {
-  createApi,
-  fetchBaseQuery,
-  type FetchBaseQueryMeta,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery, type FetchBaseQueryMeta } from "@reduxjs/toolkit/query/react";
 
 type QueryTypes = {
   dispatch: ThunkDispatch<any, any, UnknownAction>;
@@ -23,9 +19,7 @@ export const todoSlice = createApi({
     getTasks: builder.query<TTask[], void>({
       query: () => "/tasks",
       providesTags: (result, error, arg) =>
-        result
-          ? [...result.map(({ id }) => ({ type: "Task" as const, id })), "Task"]
-          : ["Task"],
+        result ? [...result.map(({ id }) => ({ type: "Task" as const, id })), "Task"] : ["Task"],
     }),
     getCompletedTasks: builder.query<TTask[], void>({
       query: () => "/tasks/completed",
@@ -91,10 +85,7 @@ async function updateTaskInCache({ dispatch, queryFulfilled }: QueryTypes) {
   }
 }
 
-async function removeTaskFromCache(
-  id: TTaskId,
-  { dispatch, queryFulfilled }: QueryTypes,
-) {
+async function removeTaskFromCache(id: TTaskId, { dispatch, queryFulfilled }: QueryTypes) {
   try {
     await queryFulfilled;
     dispatch(
@@ -110,10 +101,7 @@ async function removeTaskFromCache(
   }
 }
 
-async function addTaskToCache(
-  taskText: TTaskText,
-  { dispatch, queryFulfilled }: QueryTypes,
-) {
+async function addTaskToCache(taskText: TTaskText, { dispatch, queryFulfilled }: QueryTypes) {
   try {
     const { data: newTask } = await queryFulfilled;
     await dispatch(
