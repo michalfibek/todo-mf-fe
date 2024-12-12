@@ -6,46 +6,46 @@ import {
   type Task,
   type TaskId,
   type TaskText,
-} from "../todoSlice"
-import { useEffect, useRef, useState } from "react"
+} from "../store/todoSlice";
+import { useEffect, useRef, useState } from "react";
 import {
   CheckCircleIcon,
   PencilSquareIcon,
   XMarkIcon,
-} from "@heroicons/react/20/solid"
-import { useAppDispatch } from "../../../app/hooks"
-import { showPopup } from "../../popup/popupSlice"
+} from "@heroicons/react/20/solid";
+import { useAppDispatch } from "../../../app/hooks";
+import { showPopup } from "../../popup/popupSlice";
 
 type TaskComponentProps = {
-  task: Task
-  isEditing: boolean
-  handleSetEditing: (editing: boolean) => void
-}
+  task: Task;
+  isEditing: boolean;
+  handleSetEditing: (editing: boolean) => void;
+};
 
 export const TaskComponent = ({
   task,
   isEditing,
   handleSetEditing,
 }: TaskComponentProps): JSX.Element => {
-  const dispatch = useAppDispatch()
-  const inputField = useRef<HTMLInputElement>(null)
-  const [taskText, setTaskText] = useState(task.text)
+  const dispatch = useAppDispatch();
+  const inputField = useRef<HTMLInputElement>(null);
+  const [taskText, setTaskText] = useState(task.text);
 
   const [markComplete, { isError: isMarkCompleteError }] =
-    useMarkCompleteMutation()
+    useMarkCompleteMutation();
 
   const [markIncomplete, { isError: isMarkIncompleteError }] =
-    useMarkIncompleteMutation()
+    useMarkIncompleteMutation();
 
-  const [deleteTask, { isError: isDeleteTaskError }] = useDeleteTaskMutation()
+  const [deleteTask, { isError: isDeleteTaskError }] = useDeleteTaskMutation();
 
-  const [editTask, { isError: isEditTaskError }] = useEditTaskMutation()
+  const [editTask, { isError: isEditTaskError }] = useEditTaskMutation();
 
   const hasError =
     isMarkCompleteError ||
     isMarkIncompleteError ||
     isDeleteTaskError ||
-    isEditTaskError
+    isEditTaskError;
 
   useEffect(() => {
     if (hasError) {
@@ -54,46 +54,46 @@ export const TaskComponent = ({
           message: "Server Error: Cannot update the task",
           type: "error",
         }),
-      )
+      );
     }
-  }, [hasError, dispatch])
+  }, [hasError, dispatch]);
 
   const handleDeleteTask = async (id: TaskId) => {
-    await deleteTask(id)
-  }
+    await deleteTask(id);
+  };
 
   const handleTaskToggle = async (id: TaskId, completed: boolean) => {
     try {
       if (completed) {
-        await markIncomplete(id)
+        await markIncomplete(id);
       } else {
-        await markComplete(id)
+        await markComplete(id);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleSaveEdit = async (taskText: TaskText) => {
-    await editTask({ id: task.id, taskText: taskText })
-    handleSetEditing(false)
-  }
+    await editTask({ id: task.id, taskText: taskText });
+    handleSetEditing(false);
+  };
 
   useEffect(() => {
     function callback(e: KeyboardEvent) {
       if (e.code.toLowerCase() === "escape") {
-        setTaskText(task.text)
-        handleSetEditing(false)
+        setTaskText(task.text);
+        handleSetEditing(false);
       }
     }
-    return document.addEventListener("keydown", callback)
-  }, [isEditing, handleSetEditing, task])
+    return document.addEventListener("keydown", callback);
+  }, [isEditing, handleSetEditing, task]);
 
   useEffect(() => {
     if (isEditing) {
-      inputField.current && inputField.current.focus()
+      inputField.current && inputField.current.focus();
     }
-  }, [isEditing])
+  }, [isEditing]);
 
   return (
     <div
@@ -119,8 +119,8 @@ export const TaskComponent = ({
         ) : (
           <form
             onSubmit={e => {
-              e.preventDefault()
-              handleSaveEdit(taskText)
+              e.preventDefault();
+              handleSaveEdit(taskText);
             }}
             className="full-width"
           >
@@ -149,5 +149,5 @@ export const TaskComponent = ({
         </button>
       </div>
     </div>
-  )
-}
+  );
+};

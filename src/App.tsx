@@ -1,8 +1,8 @@
-import { Popup } from "./features/popup/Popup"
-import "./App.css"
+import { Popup } from "./features/popup/Popup";
+import "./App.css";
 // import { Counter } from "./features/counter/Counter"
 // import { Quotes } from "./features/quotes/Quotes"
-import { Todo } from "./features/todo/Todo"
+import { Todo } from "./features/todo/Todo";
 
 const App = () => {
   return (
@@ -15,7 +15,7 @@ const App = () => {
         <Todo />
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -1,24 +1,24 @@
-import { useEffect, useRef, useState } from "react"
-import { useAddTaskMutation } from "../todoSlice"
-import { useAppDispatch } from "../../../app/hooks"
-import { showPopup } from "../../popup/popupSlice"
+import { useEffect, useRef, useState } from "react";
+import { useAddTaskMutation } from "../store/todoSlice";
+import { useAppDispatch } from "../../../app/hooks";
+import { showPopup } from "../../popup/popupSlice";
 
 export const NewTaskComponent = (): JSX.Element => {
-  const dispatch = useAppDispatch()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [taskText, setTaskText] = useState("")
+  const dispatch = useAppDispatch();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [taskText, setTaskText] = useState("");
   const [addTask, { isLoading: isAddTaskLoading, error, isSuccess }] =
-    useAddTaskMutation()
+    useAddTaskMutation();
 
-  const disabled = isAddTaskLoading
+  const disabled = isAddTaskLoading;
 
   const handleAddTask = async () => {
-    const taskTrimmed = taskText.trim()
+    const taskTrimmed = taskText.trim();
     if (taskTrimmed) {
-      const response = await addTask(taskTrimmed)
-      if (response.error === undefined) setTaskText("")
+      const response = await addTask(taskTrimmed);
+      if (response.error === undefined) setTaskText("");
     }
-  }
+  };
 
   useEffect(() => {
     error &&
@@ -27,19 +27,19 @@ export const NewTaskComponent = (): JSX.Element => {
           message: "Server Error: Cannot add new task",
           type: "error",
         }),
-      )
-  }, [error, dispatch])
+      );
+  }, [error, dispatch]);
 
   // re-focus after adding new task
   useEffect(() => {
-    inputRef.current?.focus()
-  }, [isSuccess])
+    inputRef.current?.focus();
+  }, [isSuccess]);
 
   return (
     <form
       onSubmit={e => {
-        e.preventDefault()
-        handleAddTask()
+        e.preventDefault();
+        handleAddTask();
       }}
       className="flex flex-row space-x-2 mb-4"
     >
@@ -61,5 +61,5 @@ export const NewTaskComponent = (): JSX.Element => {
         Add
       </button>
     </form>
-  )
-}
+  );
+};

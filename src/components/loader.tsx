@@ -19,10 +19,10 @@ export default function Loader({ children }: { children?: React.ReactNode }) {
       </svg>
       <span className="sr-only">Loading...</span>
     </div>
-  )
+  );
   return (
     <div className="loader flex flex-row">
       {spinner} {children && <div className="ml-4">{children}</div>}
     </div>
-  )
+  );
 }
