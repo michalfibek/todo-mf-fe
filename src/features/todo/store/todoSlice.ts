@@ -1,3 +1,5 @@
+import { API_CONFIG } from "../../../config/api.config";
+
 import type { ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
 import type { TTask, TTaskId, TTaskText } from "../types/TTask";
 
@@ -13,7 +15,7 @@ type QueryTypes = {
 
 export const todoSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080" }),
+  baseQuery: fetchBaseQuery({ baseUrl: API_CONFIG.baseUrl }),
   tagTypes: ["Task"],
   endpoints: builder => ({
     getTasks: builder.query<TTask[], void>({

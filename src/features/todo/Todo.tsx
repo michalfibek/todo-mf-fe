@@ -76,7 +76,7 @@ export const Todo = () => {
             <Loader>Loading tasks...</Loader>
           </div>
         )}
-        {!isLoading && tasksEmpty && (
+        {!isLoading && !isError && tasksEmpty && (
           <div className="flex items-center my-6 text-center self-center">
             <span>Everyhing done for now. Good job!</span>
           </div>
